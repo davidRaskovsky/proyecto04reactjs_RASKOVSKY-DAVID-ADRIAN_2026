@@ -1,50 +1,69 @@
-import { useState } from 'react';
+import { useState } from "react";
+import { Form, Button } from "react-bootstrap"
 
-function Formulario({ registrar }) {
-  const [nombre, setNombre] = useState('');
-  const [apellido, setApellido] = useState('');
-  const [edad, setEdad] = useState('');
+const Formulario = ({ funcion, comidas, opciones }) => {
+    //const nombre = "";
+    const [nombre, setNombre] = useState("A");
+    const [comida, setComida] = useState("");
 
-  const enviar = (e) => {
-    e.preventDefault();
-    registrar({ nombre, apellido, edad });
-  };
+    // agregado
+    const [subOpcion, setSubOpcion] = useState("");
 
-  return (
-    <div style={{ backgroundColor: '#fff', padding: '15px', borderRadius: '8px', maxWidth: '400px', margin: '0 auto 20px auto', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-      <h3>Datos del Jugador</h3>
-      <form onSubmit={enviar}>
-        <input 
-          type="text" 
-          placeholder="Nombre" 
-          value={nombre} 
-          onChange={(e) => setNombre(e.target.value)} 
-          required 
-          style={{ margin: '5px', padding: '8px', width: '80%' }}
-        />
-        <input 
-          type="text" 
-          placeholder="Apellido" 
-          value={apellido} 
-          onChange={(e) => setApellido(e.target.value)} 
-          required 
-          style={{ margin: '5px', padding: '8px', width: '80%' }}
-        />
-        <input 
-          type="number" 
-          placeholder="Edad" 
-          value={edad} 
-          onChange={(e) => setEdad(e.target.value)} 
-          required 
-          style={{ margin: '5px', padding: '8px', width: '80%' }}
-        />
-        <br />
-        <button type="submit" style={{ marginTop: '10px', padding: '8px 15px', cursor: 'pointer', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px' }}>
-          Registrar Jugador
-        </button>
-      </form>
-    </div>
-  );
+    const subOpciones = comida ? opciones[comida] : []
+    //console.log("paso por aquí y comida tiene "+comida);
+
+    const manejarCambios = (e) => {
+        const value = e.target.value;
+        setComida(value);
+        setSubOpcion("");
+    }
+    // hasta aquí los cambios
+
+    const procesarDatos = (e) => {
+        e.preventDefault();
+        const seleccion = {
+            nombre: nombre.trim(),
+            comida: comida.trim()
+        };
+        funcion(seleccion);
+        setNombre("");
+        setComida("");
+    };
+
+    return (
+        <div>
+            <Form onSubmit={procesarDatos}>
+                <Form.Group className="mb-3" controlId="formBasicEmail">
+                    <Form.Label>Ingresar Nombre</Form.Label>
+                    <Form.Control type="text" placeholder="ingresar un nombre"
+                        value={nombre}
+                        onChange={(e) => setNombre(e.target.value)} />
+                </Form.Group>
+                <Form.Select value={comida} onChange={manejarCambios}>
+                    <option>Elegir una comida favorita</option>
+                    {comidas.map((c) => (
+                        <option key={c} value={c}>{c}</option>
+                    ))}
+                </Form.Select>
+
+                {comida && (
+                    <Form.Select id="subOption"
+                        value={subOpcion}
+                        onChange={(e) => setSubOpcion(e.target.value)}>
+                        <option>Selecciona una opción</option>
+                        {subOpciones.map((i) => (
+                            <option key={i} value={i}>
+                                {i}
+                            </option>))}
+                    </Form.Select>
+                )}
+
+                <Button variant="primary" type="submit">
+                    Guardar
+                </Button>
+            </Form>
+        </div>
+    )
 }
 
 export default Formulario;
